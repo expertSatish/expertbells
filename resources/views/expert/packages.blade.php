@@ -75,15 +75,16 @@
                                     <td>{{$res->package_name}}</td>
                                     <td style="color:rgba(75, 174, 79, 1)">{{$res->prince_of_session}}</td>
                                     <td>{{$res->time}} mins</td>
-                                    <td><a><i class="fa-regular fa-pen-to-square editform" data-id="{{$res->id}}"
+                                    <td><a style="cursor: pointer;"><i class="fa-regular fa-pen-to-square editform" data-id="{{$res->id}}"
                                                 data-number_session="{{$res->number_session}}"
                                                 data-prince_of_session="{{$res->prince_of_session}}"
                                                 data-name="{{$res->package_name}}" data-time="{{$res->time}}"
                                                 data-user_id="{{expertinfo()->user_id}}"
-                                                data-description="{{$res->description}}" style="color: blue;"></i></a><a
-                                            href="{{url('/expert/package-delete/'.$res->id)}}"
-                                            style="margin-left: 5px;">
-                                            <i class="fa-solid fa-trash-can" style="color: #cb1010;"></i></a>
+                                                data-description="{{$res->description}}" style="color: blue;"></i></a>
+                                        <a href="{{url('/expert/package-delete/'.$res->id)}}"
+                                            style="margin-left: 5px; cursor: pointer;">
+                                            <i class="fa-solid fa-trash-can" style="color: #cb1010;"></i>
+                                        </a>
                                     </td>
 
                                 </tr>

@@ -1,9 +1,14 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @extends('layouts.app')
 @section('content')
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
 <style>
+    .bluecolor {
+        color: #0c233b;
+    }
+
     .font-here {
         font-size: 10px;
     }
@@ -51,10 +56,10 @@
 
 
     .bio-content {
-        height: 6.2em;
+        height: 6.0em;
         /* Display 4 lines of content */
         overflow: hidden;
-        line-height: 1.5em;
+        line-height: 1.5em !important;
         /* Set line height based on desired spacing */
     }
 
@@ -89,10 +94,10 @@
                     <div class="d-flex flex-wrap">
                         @csrf
                         <div class="dropdown FilterDrop">
-                            <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Expertise<span></span></a>
+                            <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Expertise <span id="checkboxCount" style="color: green;"></span></a>
                             <div class="dropdown-menu p-3" style="width: 900px;">
                                 <input type="text" class="form-control SearchBox" placeholder="Search...">
-                                <div class="row">
+                                <div class="row" id="checkboxContainer">
                                     @foreach ($categories as $category)
                                     <div class="col-sm-4" style="padding:10px">
                                         <h6>{{ $category->title }}</h6>
@@ -141,182 +146,172 @@
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="row databox my-5">
-                        @if ($experts->count() == 0)
-                        <x-data-not-found data="Experts" />
-                        @endif
-                        @foreach ($experts as $expert)
-                        <div class="col-md-6 col-lg-4 py-3">
-                            <div class="card verify border shadow" style="background-color: #0c233b; border-radius: 27px !important; ">
-                                <div class="dropdown text-end pe-4 pt-3" style="margin-bottom: -20px;">
-                                    <span class="share-button" onclick="toggleDropdown(this)">
-                                        <i class="fa fa-share-alt" style="color: white; width: 37px; height: 37px"></i>
-                                    </span>
-                                    <div class="dropdown-content p-0 m-0" style="background-color: black; border-radius: 7px">
-                                        <a href="https://wa.me/?text={{ urlencode(route('experts', ['alias' => $expert->user_id])) . '%0A' . urlencode($expert->name) . '%0A' . urlencode($expert->bio) }}" target="_blank">
-                                            <i class="fab fa-whatsapp p-2" style="color: #11b62c; background-color:#0c233b; border-radius:7px;"></i>
-                                        </a>
+                <div class="container">
+                    @if ($experts->count() == 0)
+                    <x-data-not-found data="Experts" />
+                    @endif
+                    @foreach ($experts as $expert)
+                    <div class="databox container my-5">
+                        <div class="p-3" style="border-radius: 16px;border: 1px solid rgba(166, 164, 164, 1)">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="d-flex justify-content-center pt-3">
+                                    <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="">
+                                        @php
+                                        $imageFormats = ['webp', 'jpg', 'jpeg', 'png']; // Define the supported image formats
+                                        $foundImage = false;
+                                        @endphp
 
-                                        <a href="https://t.me/share/url?url={{ urlencode(route('experts', ['alias' => $expert->user_id])) }}&text={{ urlencode($expert->name) }}%0A{{ urlencode($expert->bio) }}" target="_blank">
-                                            <i class="fab fa-telegram p-2" style="color: white; background-color:#0c233b; border-radius: 7px;"></i>
-                                        </a>
+                                        @foreach ($imageFormats as $format)
+                                        @php
+                                        $imagePath = 'uploads/expert/' . $expert->profile . '.' . $format;
+                                        @endphp
 
-                                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(route('experts', ['alias' => $expert->user_id])) }}&title={{ urlencode($expert->name) }}&summary={{ urlencode($expert->bio) }}" target="_blank">
-                                            <i class="fab fa-linkedin p-2" style="color: #245bb2; background-color: #0c233b; border-radius: 7px;"></i>
-                                        </a>
+                                        @if (file_exists(public_path($imagePath)))
+                                        <img src="{{ asset($imagePath) }}" style="height: 180px; width:180px;border-radius:50%;">
+                                        @php $foundImage = true; @endphp
+                                        @break 
+                                        @endif
+                                        @endforeach
 
-                                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('experts', ['alias' => $expert->user_id])) }}&quote={{ urlencode($expert->name) }} - {{ urlencode($expert->bio) }}" target="_blank">
-                                            <i class="fab fa-facebook p-2" style="color: white; background-color: #0c233b; border-radius: 7px;"></i>
-                                        </a>
-
+                                        @if (!$foundImage)
+                                        <img src="{{ asset('frontend/image/no-img.webp') }}" style="height:180px; width:185px; border-radius:50%;">
+                                        @endif
+                                    </a>
                                     </div>
+                                    <div class="ps-lg-4 pt-4 mt-2 pb-1 pb-0 mb-0" style="font-size: 16.71px;color:rgba(12, 35, 59, 0.9)">
+                                        Starts At
+                                    </div>
+                                    <div class="ps-lg-4 d-flex justify-content-start align-items-center">
+                                        @if($expert->defaultcharges)
+                                        <img src="{{ asset('frontend/image/Rs..png') }}" style=" font-size:36px">&nbsp;
+                                        @if($expert->defaultcharges->charges > 0 )
+                                        <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:36px;line-height:0">{{ round(($expert->defaultcharges->charges) + ($expert->defaultcharges->charges * 0) / 100) }}/-</span>
+                                        @else
+                                        <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:36px">{{ round(($expert->charge) + ($expert->charge * 0) / 100) }}/-</span>
+                                        @endif
+                                        @endif
+                                    </div>
+                                    
                                 </div>
-                                <script>
-                                    function toggleDropdown(button) {
-                                        var dropdownContent = button.nextElementSibling;
-                                        if (dropdownContent.style.display === "block") {
-                                            dropdownContent.style.display = "none";
-                                        } else {
-                                            dropdownContent.style.display = "block";
-                                        }
-                                    }
+                                <div class="col-lg-6 " style="border-right: 1px solid rgba(0, 0, 0, 0.3)">
+                                    <div class="pe-4">
 
-                                    window.addEventListener("click", function(event) {
-                                        var dropdowns = document.getElementsByClassName("dropdown-content");
-                                        for (var i = 0; i < dropdowns.length; i++) {
-                                            var dropdown = dropdowns[i];
-                                            if (dropdown.style.display === "block" && !dropdown.parentNode.contains(event.target)) {
-                                                dropdown.style.display = "none";
-                                            }
-                                        }
-                                    });
-                                </script>
-                                <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="">
-                                    @if(!$expert->defaultcharges)
-                                    <small class="NotAvl text-danger">Not Available</small>
-                                    @endif
+                                        <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="">
+                                            @if(!$expert->defaultcharges)
+                                            <small class="NotAvl text-danger">Not Available</small>
+                                            @endif
+                                            <div class=" p-0 m-0 pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.3)">
+                                                <a href="{{ route('experts', ['alias' => $expert->user_id]) }}">
+                                                    <div class="">
+                                                        <div class="p-0 m-0 bluecolor fw-semibold" style="font-size: 28px;">{{ $expert->name ?? '' }}@if ($expert->top_expert == 1)<span>&nbsp;<img src="{{ asset('uploads/expert/jpg/verify.png') }}" height="28px" width="28px"></span>@endif </div>
 
-                                    <div class="row m-0 ps-2" style="height: 100px;">
-                                        <div class="col-4 d-flex justify-content-center">
-                                            <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="">
-                                                @php
-                                                $imageFormats = ['webp', 'jpg', 'jpeg', 'png']; // Define the supported image formats
-                                                $foundImage = false;
-                                                @endphp
-
-                                                @foreach ($imageFormats as $format)
-                                                @php
-                                                $imagePath = 'uploads/expert/' . $expert->profile . '.' . $format;
-                                                @endphp
-
-                                                @if (file_exists(public_path($imagePath)))
-                                                <img class="image-setting" src="{{ asset($imagePath) }}" style="height: 98px; width:98px;border-radius:50%;">
-                                                @php $foundImage = true; @endphp
-                                                @break
-                                                @endif
-                                                @endforeach
-
-                                                @if (!$foundImage)
-                                                <img src="{{ asset('frontend/image/no-img.webp') }}" style="height:100px; width:100px; border-radius:50%;">
-                                                @endif
-                                            </a>
-
-                                        </div>
-                                        <div class="col-8 p-0 m-0 pt-2">
-                                            <a href="{{ route('experts', ['alias' => $expert->user_id]) }}">
-                                                <div class="">
-                                                    <div class="text-white p-0 m-0 pb-2" style="font-size: 20px;">{{ $expert->name ?? '' }}@if ($expert->top_expert == 1)<span>&nbsp;<img src="{{ asset('uploads/expert/jpg/verify.png') }}" height="16px" width="16px"></span>@endif </div>
-
-                                                    <div class="text-white fw-lighter p-0 m-0" style="font-size: 14px;">
+                                                        <div class="p-0 m-0" style="font-size: 20px;color:rgba(12, 35, 59, 0.8)">
                                                         @if (!empty($expert->roles))
                                                         @foreach ($expert->roles as $roles)
-                                                        @if (!empty($roles->roleinfo) && $loop->iteration < 3) {{ $roles->roleinfo->title }} {{ $loop->iteration < 1 ? ', ' : '' }} @endif @endforeach @endif</div>
-                                                    </div>
-                                                    <hr class="custom-hr mt-3">
-                                            </a>
-
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="align-items-start">
-                                        <div class="align-items-center p-2 py-4">
-                                            <!-- <div class="pb-1 text-white ps-2 text-center">Expertise</div> -->
-                                            @if (!empty($expert->expertise))
-                                            <div class="container border" style="height: 55px; background-color: #F1F7FF; border-radius: 15px; text-align: center">
-                                                <div class="row">
-                                                    <div class="col-1 text-center pt-2">
-                                                        <img src="{{ asset('uploads/expert/expertise.png') }}" height="25px" width="25px">
-                                                    </div>
-                                                    <div class="col-11">
-                                                        <!-- <div style="padding-top:{{ $expert->expertise->count() < 3 ? '0' : '20px' }};"> -->
-                                                        <!-- <div style="padding-right:{{ $expert->expertise->count() < 4 ? '0' : '20px' }}"> -->
-                                                        @foreach ($expert->expertise as $expertise)
-                                                        @if ($loop->iteration == 3)
-                                                          <br>
-                                                        @endif
-                                                        @if (!empty($expertise->expertiseinfo) && $loop->iteration < 5) <span class="d-inline-block" style="{{ $loop->count < 3 ? 'padding-top: 10px;' : '' }}">
-                                                            <div class="fw-bold my-1" style="color: black; font-weight: bold; font-size: 13px">{{ $expertise->expertiseinfo->title }} @if ($loop->last || $loop->iteration === 4)
-                                                                <span></span>
-                                                                @else
-                                                                <span>,&nbsp;</span>
-                                                                @endif
-                                                            </div>
-                                                            </span>
+                                                            @if (!empty($roles->roleinfo) && $loop->iteration < 3)
+                                                                {{ $roles->roleinfo->title }}
+                                                                {{ $loop->iteration < 1 ? ', ' : '' }}
                                                             @endif
-                                                            @endforeach
+                                                        @endforeach
+                                                    @endif
+                                                    {{ $expert->compnay_name && count($expert->expertise) > 0 ? ', ' . $expert->compnay_name : $expert->compnay_name }} </div>
+                                                        </div>
+                                                </a>
+                                            </div>
+                                            <a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="align-items-start">
+                                                <div class="align-items-center">
+                                                    <!-- <div class="pb-1 text-white ps-2 text-center">Expertise</div> -->
+                                                    @if (!empty($expert->expertise))
+                                                    <div>
+                                                        <div class="row mb-3">
+                                                            <div class="col-12">
+                                                                <!-- <div style="padding-top:{{ $expert->expertise->count() < 3 ? '0' : '20px' }};"> -->
+                                                                <!-- <div style="padding-right:{{ $expert->expertise->count() < 4 ? '0' : '20px' }}"> -->
+                                                                @foreach ($expert->expertise as $expertise)
+                                                                @if ($loop->iteration == 4)
+                                                                <br>
+                                                                @endif
+                                                                @if (!empty($expertise->expertiseinfo) && $loop->iteration < 6) <span class="d-inline-block" style="{{ $loop->count < 4 ? '' : '' }}">
+                                                                    <div class="px-3 py-2 mt-3 me-2" style="background-color:rgba(22, 120, 251, 0.1);color: rgba(12, 35, 59, 1);font-size: 12px; border-radius:16px">{{ $expertise->expertiseinfo->title }}
+                                                                    </div>
+                                                                    </span>
+                                                                    @endif
+                                                                    @endforeach
+                                                            </div>
+                                                            <!-- </div> -->
+                                                            <!-- </div> -->
+                                                        </div>
                                                     </div>
-                                                    <!-- </div> -->
-                                                    <!-- </div> -->
+                                                    @endif
                                                 </div>
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </a>
-
-                                    <div class="bg-white m-0" style="border-top: 1px solid rgba(0, 0, 0, 0.2);">
-                                        <div class="bio-container px-4 py-2" style="font-size: 13px;">
-                                            <div class="bio-content" style="text-align: justify;">
-                                                {!! $expert->bio !!}
-                                            </div>
-                                            <div class="font-here "><a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="view-more text-primary">...View Profile</a></div>
-                                        </div>
-
-                                        <div class="row m-0" style="border-bottom: 1px solid rgba(0, 0, 0, 0.2);">
-                                            <div class="col-6 m-0 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.2);">
-                                                <div class="h5 py-3 text-white m-0" style="border-right: 1px solid rgba(0,0,0,0.2);">
-                                                    <span>
-                                                        @if($expert->defaultcharges)
-                                                        <i class='fa fa-rupee' style='color:rgba(21, 185, 86, 1)'></i>
-                                                        @if($expert->defaultcharges->charges > 0 )
-                                                        <span style="color: rgba(21, 185, 86, 1);font-weight:bold">{{ round(($expert->defaultcharges->charges) + ($expert->defaultcharges->charges * 0) / 100) }}/-</span>
-                                                        @else
-                                                        <span style="color: rgba(21, 185, 86, 1);font-weight:bold">{{ round(($expert->charge) + ($expert->charge * 0) / 100) }}/-</span>
-                                                        @endif
-                                                        @endif
-                                                    </span>
-                                                    <div class="text-center text-black pt-1" style="font-size: x-small;">per 30 min call</div>
-                                                    <!-- <div class="text-center text-primary pt-1" style="font-size: 9px"><u>View More Packages</u></div> -->
-                                                </div>
-                                            </div>
-                                            <div class="col-6 m-0 text-center pt-3 border-left" style="border-top: 1px solid rgba(0, 0, 0, 0.2);"><a href="#">
-                                                    <h6>
-                                                        <div><i class='fas fa-box pb-2' style='color:#0c233b'></i></div>View Plans
-                                                    </h6>
-                                                </a></div>
-                                        </div>
-                                        <div class=" bg-white text-center py-3">
-                                            <a class="btn" style="background-color: #0c233b; color: white" href="{{ route('experts', ['alias' => $expert->user_id]) }}">
-                                                Book Session
                                             </a>
-                                        </div>
-                                        <!-- </div> -->
+
+                                            <div class="bg-white m-0 pt-2" style="border-top: 1px solid rgba(0, 0, 0, 0.3)">
+                                                <div class="bio-container" style="font-size: 14px;">
+                                                    <div class="bio-content" style="text-align: justify;">
+                                                        {!! $expert->bio !!}
+                                                    </div>
+                                                    <div class="font-here "><a href="{{ route('experts', ['alias' => $expert->user_id]) }}" class="view-more text-primary">...more</a></div>
+                                                </div>
+                                                <!-- </div> -->
+                                            </div>
+                                        </a>
                                     </div>
-                                </a>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="">
+                                    <div style="font-size: 20px;">Packages</div>
+                                    <div class="pt-3 pb-2">
+                                        <div class="row">
+                                            <div class="col-1 pt-1">
+                                            <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
+                                            </div>
+                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Growth Hacking for your Startup
+                                            <div class="pt-1" style="font-size: 10px;">
+                                        <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
+                                           &nbsp; 1 X 30min Session
+                                        </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="py-2">
+                                        <div class="row">
+                                            <div class="col-1 pt-1">
+                                            <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
+                                            </div>
+                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Marketing Planning and Strategy
+                                            <div class="pt-1" style="font-size: 10px;">
+                                        <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
+                                           &nbsp; 1 X 60min Session
+                                        </div>
+                                        </div>
+                                        </div>
+                                    </div><div class="py-2">
+                                        <div class="row">
+                                            <div class="col-1 pt-1">
+                                            <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
+                                            </div>
+                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Growth Hacking for your Startup
+                                            <div class="pt-1" style="font-size: 10px;">
+                                        <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
+                                           &nbsp; 5 X 60min Session
+                                        </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class=" bg-white text-center py-3">
+                                        <a class="btn" style="background-color: #0c233b; color: white;width:80%" href="{{ route('experts', ['alias' => $expert->user_id]) }}">
+                                            View Plans
+                                        </a>
+                                    </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        @endforeach
-                        {{ $experts->links() }}
                     </div>
+                    @endforeach
+                    {{ $experts->links() }}
                 </div>
             </div>
         </form>
@@ -671,4 +666,15 @@
         $('.filterform').submit();
     });
 </script>
+<script>
+    // jQuery code
+    $(document).ready(function() {
+        // Listen for changes in checkboxes within the container
+        $('#checkboxContainer input[type="checkbox"]').change(function() {
+            var checkedCount = $('#checkboxContainer input[type="checkbox"]:checked').length;
+            $('#checkboxCount').text(checkedCount);
+        });
+    });
+</script>
+
 @endpush
