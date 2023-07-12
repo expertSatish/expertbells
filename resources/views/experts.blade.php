@@ -262,44 +262,21 @@
                                 <div class="col-lg-3">
                                     <div class="">
                                     <div style="font-size: 20px;">Packages</div>
+                                    @foreach($package as $res)
                                     <div class="pt-3 pb-2">
                                         <div class="row">
                                             <div class="col-1 pt-1">
                                             <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
                                             </div>
-                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Growth Hacking for your Startup
+                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">{{$res->package_name}}
                                             <div class="pt-1" style="font-size: 10px;">
                                         <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                           &nbsp; 1 X 30min Session
+                                           &nbsp; {{$res->number_session}} X {{$res->time}}min Session
                                         </div>
                                         </div>
                                         </div>
                                     </div>
-                                    <div class="py-2">
-                                        <div class="row">
-                                            <div class="col-1 pt-1">
-                                            <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
-                                            </div>
-                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Marketing Planning and Strategy
-                                            <div class="pt-1" style="font-size: 10px;">
-                                        <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                           &nbsp; 1 X 60min Session
-                                        </div>
-                                        </div>
-                                        </div>
-                                    </div><div class="py-2">
-                                        <div class="row">
-                                            <div class="col-1 pt-1">
-                                            <i class="fa-regular fa-circle-check" style="color: #0c233b;"></i>
-                                            </div>
-                                            <div class="col-10" style="font-size: 16px;line-height:19.2px">Growth Hacking for your Startup
-                                            <div class="pt-1" style="font-size: 10px;">
-                                        <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                           &nbsp; 5 X 60min Session
-                                        </div>
-                                        </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                     <div class=" bg-white text-center py-3">
                                         <a class="btn" style="background-color: #0c233b; color: white;width:80%" href="{{ route('experts', ['alias' => $expert->user_id]) }}">
                                             View Plans

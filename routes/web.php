@@ -30,6 +30,7 @@ Route::get('/career/{alias?}', [App\Http\Controllers\HomeController::class, 'car
 Route::get('experts/{alias?}/{type?}', [App\Http\Controllers\HomeController::class, 'experts'])->name('experts');
 Route::get('videos', [App\Http\Controllers\HomeController::class, 'expertvideos'])->name('videos');
 Route::get('videosearch', [App\Http\Controllers\HomeController::class, 'searchexpertvideos'])->name('videosearch');
+Route::get('get-package-detail', [App\Http\Controllers\HomeController::class, 'packageDetail'])->name('packageDetail');
 
 
 Route::get('autosearch', [App\Http\Controllers\HomeController::class, 'autosearch'])->name('autosearch');

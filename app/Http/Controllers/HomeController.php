@@ -8,6 +8,7 @@ use Firebase\JWT\JWT;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\ExpertVideo;
+use App\Models\Package;
 use App\Models\SlotBook;
 class HomeController extends Controller{    
 
@@ -182,6 +183,8 @@ class HomeController extends Controller{
             $requestsection = \App\Models\Cms::find(1);
             $giftsection = \App\Models\Cms::find(2);
             $video = ExpertVideo::where('expert_id',$experts->id)->first();
+            $package = Package::where('user_id',$experid)->get();
+            $packageDetail = Package::where('user_id',$experid)->first();
             $notesection = \App\Models\Cms::find(3);
             $slots = \App\Models\SlotAvailability::where(['is_publish'=>1,'expert_id'=>$experts->id,'day'=>date('l',strtotime('Y-m-d'))])->get();
                $slotsCount = SlotBook::where('expert_id', $experts->id)
@@ -196,16 +199,35 @@ class HomeController extends Controller{
                 });
             })
             ->get();
-            return view('expert-intro',compact('experts','slots','requestsection','giftsection','notesection','video','slotsCount'));
+            return view('expert-intro',compact('package','packageDetail','experts','slots','requestsection','giftsection','notesection','video','slotsCount'));
         }else{
             $experts = $experts->whereNotIn('id',[expertinfo()->id ?? 0]);
             $experts = $experts->paginate(42);
             $expertise = \App\Models\Expertise::where(['is_publish'=>1])->get();
             $industries = \App\Models\Industry::where(['is_publish'=>1])->get();
             $roles = \App\Models\Role::where(['is_publish'=>1])->get();
-              $categories = \App\Models\ExpertCategory::where(['is_publish'=>1])->orderBy('sequence','asc')->get();
-            return view('experts',compact('experts','expertise','categories','industries','roles'));
+            $package = Package::where('user_id',$experid)->get();
+            $categories = \App\Models\ExpertCategory::where(['is_publish'=>1])->orderBy('sequence','asc')->get();
+            return view('experts',compact('experts','expertise','categories','industries','roles','package'));
         }
+    }
+    public function packageDetail(Request $request)
+    {
+        $packageId = $request->input('packageId');
+
+        // Retrieve the package details from the database using the package ID
+        $package = Package::find($packageId);
+
+        // You can customize the response format as per your needs (e.g., JSON, HTML, etc.)
+        $response = [
+            'package_name' => $package->package_name,
+            'description' => $package->description,
+            'number_session' => $package->number_session,
+            'time' => $package->time,
+            
+        ];
+
+        return response()->json($response);
     }
     public function expertvideos($experid=null){
         if(!empty(request('v'))){

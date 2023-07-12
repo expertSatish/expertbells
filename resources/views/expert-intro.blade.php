@@ -85,9 +85,11 @@
                                     @endif
                         </small>
                         <div class="d-flex justify-content-start align-items-center">
+                        @if (count($experts->videos) > 0)
                             <div class="px-2 py-1 me-3" style="border: 1px solid rgba(0,0,0,0.4);border-radius:8px">
-                                <a href="#" style="font-size: 14px !important;color:rgba(12, 35, 59, 1)"><i class="fa-solid fa-circle-play" style="color: #1678fb;"></i>&nbsp;Play Intro</a>
+                                <a href="{{ route('experts', ['alias'=>$video->expert->user_id,'type'=>'videos','v'=>$video->video_id,'check'=>Request::segment(2)]) }}" style="font-size: 14px !important;color:rgba(12, 35, 59, 1)"><i class="fa-solid fa-circle-play" style="color: #1678fb;"></i>&nbsp;Play Intro</a>
                             </div>
+                            @endif
                             <div class="px-2 py-1 mx-3" style="border: 1px solid rgba(0,0,0,0.4);border-radius:8px">
                                 <a href="#" style="font-size: 14px !important;color:rgba(12, 35, 59, 1)"><img src="{{ asset('frontend/image/calendar-1.png') }}" height="14px" width="14px">&nbsp;Check Availability</a>
                             </div>
@@ -199,42 +201,26 @@
                     <div class="col-lg-4">
                         <div class="container shadow rounded border bg-white p-3 ms-5" style="margin-top: -225px !important;">
                             <div class="text-center fw-semibold py-2" style="font-size: 23px;border-bottom:1px solid rgba(0,0,0,0.3);color:#0c233b;">Packages</div>
+                            @foreach($package as $res)
                             <div class="pb-2 pt-3">
                                 <div class="d-flex justify-centent-center">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" height="auto" width="100%" checked>
-                                    <label class="form-check-label" for="flexRadioDefault1" style="font-size: 15px;">
-                                        <div class="ms-2" style="font-size: 17px;color:#0c233b;">Growth Hacking for your Startup</div>
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault" data-package-id="{{$res->id}}"
+                                        data-package-number-session="{{$res->number_session}}" data-package-name="{{$res->package_name}}" 
+                                        data-package-description="{{$res->description}}" data-package-prince_of_session="{{$res->prince_of_session}}"
+                                        data-package-time="{{$res->time}}" height="auto" width="100%" checked>      
+                                    <label class="form-check-label" for="flexRadioDefault" style="font-size: 15px;">
+                                        <div class="ms-2" style="font-size: 17px;color:#0c233b;">{{$res->package_name}}</div>
                                     </label>
                                 </div>
                                 <div class="ps-3 ms-2 d-flex align-items-center" style="font-size: 10px;color:#0c233b;">
                                     <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                    &nbsp; 1 X 30min Session
+                                    &nbsp; {{$res->number_session}} X {{$res->time}}min Session
                                 </div>
+                                <!-- Add data attributes to store package details -->
+                                <div class="d-none package-data" data-number-session="{{$res->number_session}}" data-package-name="{{$res->package_name}}" data-description="{{$res->description}}" data-time="{{$res->time}}"></div>
                             </div>
-                            <div class="py-3">
-                                <div class="d-flex justify-centent-center">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" height="auto" width="100%">
-                                    <label class="form-check-label" for="flexRadioDefault1" style="font-size: 15px;">
-                                        <div class="ms-2" style="font-size: 17px;color:#0c233b;">Marketing Planning and Strategy</div>
-                                    </label>
-                                </div>
-                                <div class="ps-3 ms-2 d-flex align-items-center" style="font-size: 10px;color:#0c233b;">
-                                    <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                    &nbsp; 1 X 60min Session
-                                </div>
-                            </div>
-                            <div class="pt-2 pb-4">
-                                <div class="d-flex justify-centent-center">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" height="auto" width="100%">
-                                    <label class="form-check-label" for="flexRadioDefault1" style="font-size: 15px;">
-                                        <div class="ms-2" style="font-size: 17px;color:#0c233b;">Product Finding to Competitive Analysis</div>
-                                    </label>
-                                </div>
-                                <div class="ps-3 ms-2 d-flex align-items-center" style="font-size: 10px;color:#0c233b;">
-                                    <img src="{{ asset('frontend/image/clock_time.png') }}" height="10px" width="10px">
-                                    &nbsp; 5 X 60min Session
-                                </div>
-                            </div>
+                            @endforeach
+
                             <!-- Add this code where you want to display the popup -->
                             <div id="popup" class="popup-overlay" style="border-radius:15px 15px 0 0">
                                 <div class="popup-content" style="background-color: #0c233b;border-radius:15px">
@@ -242,7 +228,7 @@
                                     <a id="closeBtn" class="btn mt-3 mx-2"><i class="fa-sharp fa-solid fa-arrow-left" style="color: #ffffff;"></i></a>
                                     <div class="row pb-3 px-3 pt-2">
                                         <div class="col-8">
-                                            <div class="h4 text-white pt-2">Growth Hacking for your Startup</div>
+                                            <div class="h4 text-white pt-2" id="package_name"></div>
                                         </div>
                                         <div class="col-4">
                                             <div class="img">
@@ -269,24 +255,26 @@
                                         </div>
                                     </div>
                                     <div class="p-3" style="background-color: rgba(244, 249, 255, 1);border-radius: 0 0 15px 15px;">
-                                    <div class="d-flex align-items-start ">
-                                        <div class="pe-2 pt-2"><i class="fa-solid fa-calendar-days w-100" style="color: #0c233b;font-size:30px"></i></div>
-                                        <div>
-                                        <div class="fw-semibold fs-large text-black">1 x Growth Hacking for your Startup</div>
-                                        <div class="pb-3">30mins per session</div>
+                                        <div class="d-flex align-items-start">
+                                            <div class="pe-2 pt-2"><i class="fa-solid fa-calendar-days w-100" style="color: #0c233b;font-size:30px"></i></div>
+                                            <div>
+                                                <div class="fw-semibold fs-large text-black" id="package_name"></div>
+                                                <div class="pb-3" id="number_session"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                        <div class="py-2" style="border-bottom: 1px solid rgba(0,0,0,0.3);border-top: 1px solid rgba(0,0,0,0.3); font-size:13px">Are you a startup founder seeking rapid and sustainable growth? Our 1:1 Growth Hacking program is tailored specifically for startups like yours, providing personalized guidance and strategies to catapult your business forward.eting strategiesally increase your customer base.</div>
+                                        <div class="py-2" style="border-bottom: 1px solid rgba(0,0,0,0.3);border-top: 1px solid rgba(0,0,0,0.3); font-size:13px">
+                                            <div id="description"></div>
+                                        </div>
                                         <div class="d-flex justify-content-between align-items-center pt-2">
                                             <div class="d-flex align-items-center">
-                                            @if($experts->defaultcharges)
-                                            <img src="{{ asset('frontend/image/Rs..png') }}" height="auto" width="29px" class="pt-1">&nbsp;
-                                            @if($experts->defaultcharges->charges > 0 )
-                                            <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:26px;line-height:0">{{ round(($experts->defaultcharges->charges) + ($experts->defaultcharges->charges * 0) / 100) }}/-</span>
-                                            @else
-                                            <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:26px">{{ round(($experts->charge) + ($experts->charge * 0) / 100) }}/-</span>
-                                            @endif
-                                            @endif
+                                                @if($experts->defaultcharges)
+                                                <img src="{{ asset('frontend/image/Rs..png') }}" height="auto" width="29px" class="pt-1">&nbsp;
+                                                @if($experts->defaultcharges->charges > 0 )
+                                                <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:26px;line-height:0">{{ round(($experts->defaultcharges->charges) + ($experts->defaultcharges->charges * 0) / 100) }}/-</span>
+                                                @else
+                                                <span class="fw-semibold" style="color: rgba(75, 174, 79, 1);font-size:26px">{{ round(($experts->charge) + ($experts->charge * 0) / 100) }}/-</span>
+                                                @endif
+                                                @endif
                                             </div>
                                             <a href="" class="btn text-white" style="background-color: #0c233b;">Buy Package</a>
                                         </div>
@@ -299,7 +287,7 @@
                                 <a href="#" class="btn text-white bg-primary my-3" style="width:90%" onclick="openPopup()">View Detail</a>
                                 <a href="#" class="btn text-primary mt-2 mb-3" style="width:90%; background-color:rgba(225, 238, 255, 1)">View All Packages</a>
                             </div>
-
+                            <div>
                         </div>
                     </div>
                 </div>
@@ -618,5 +606,32 @@
     var closeBtn = document.getElementById('closeBtn');
     closeBtn.addEventListener('click', closePopup);
 </script>
+
+
+<script>
+function openPopup() {
+    var packageId = $('input[name="flexRadioDefault"]:checked').data('package-id');
+    // Perform your action with the selected package ID
+    console.log("Selected package ID: " + packageId);
+
+    // Retrieve the package details from the selected checkbox
+    var selectedCheckbox = $('input[name="flexRadioDefault"]:checked');
+    var numberSession = selectedCheckbox.data('package-number-session');
+    var packageName = selectedCheckbox.data('package-name');
+    var description = selectedCheckbox.data('package-description');
+    var time = selectedCheckbox.data('package-time');
+
+    // Populate the popup with the package details
+    $('#popup #package_name').text(packageName);
+    $('#popup #number_session').text(numberSession + ' X ' + time + 'min Session');
+    $('#popup #description').text(description);
+
+    // Show the popup
+    $('#popup').show();
+}
+
+
+</script>
+
 <x-user.message-popup />
 @endpush
